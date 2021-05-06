@@ -1,0 +1,20 @@
+version: '3'
+services:
+  php:
+    image: ${PHP_IMAGE}
+    network_mode: "service:nginx"
+    working_dir: /var/www
+    volumes:
+      - "${VOLUMES_ROOT}:/var/www"
+  nginx:
+    image: ${NGINX_IMAGE}
+    hostname: ${NGINX_VIRTUAL_HOST}
+    environment:
+      - VIRTUAL_HOST=${NGINX_VIRTUAL_HOST}
+    volumes:
+      - "${VOLUMES_ROOT}/.docker/nginx/default.conf.template:/etc/nginx/templates/default.conf.template"
+      - "${VOLUMES_ROOT}:/var/www"
+networks:
+  default:
+    external:
+      name: "${NETWORK}"
