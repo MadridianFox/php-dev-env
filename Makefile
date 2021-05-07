@@ -10,12 +10,16 @@ env:
 
 network:
 	docker network create ${NETWORK}
-
-proxy:
 	docker run -d -p ${NETWORK_PROXY_PORT}:80 \
-		--network ${NETWORK} \
-		-v /var/run/docker.sock:/tmp/docker.sock:ro \
-		--name ${NETWORK}-proxy jwilder/nginx-proxy
+			--network ${NETWORK} \
+			-v /var/run/docker.sock:/tmp/docker.sock:ro \
+			--name ${NETWORK}-proxy jwilder/nginx-proxy
+
+proxy-start:
+	docker start ${NETWORK}-proxy
+
+proxy-stop:
+	docker stop ${NETWORK}-proxy
 
 start:
 	cd .docker && docker-compose up -d

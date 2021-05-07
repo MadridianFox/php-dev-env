@@ -13,7 +13,7 @@ vim .docker/.env
 3) подготовить сеть и прокси, если это ещё не было сделано
 ```shell
 make network
-make proxy
+make proxy-start
 ```
 4) запустить контейнеры
 ```shell
