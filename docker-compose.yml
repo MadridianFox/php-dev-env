@@ -1,0 +1,49 @@
+version: '3'
+services:
+  php:
+    image: ${FPM_IMAGE}
+    network_mode: "service:nginx"
+    working_dir: /var/www
+    entrypoint:
+      - "/usr/local/bin/entrypoint"
+    command:
+      - "php-fpm"
+      - "-R"
+    volumes:
+      - "${FPM_ENTRYPOINT}:/usr/local/bin/entrypoint"
+      - "${PROJECT_DIR}:/var/www"
+  nginx:
+    image: ${NGINX_IMAGE}
+    hostname: ${NGINX_VIRTUAL_HOST}
+    networks:
+      - dev_network
+    environment:
+      - VIRTUAL_HOST=${NGINX_VIRTUAL_HOST}
+      - DOCUMENT_ROOT=${DOCUMENT_ROOT}
+    volumes:
+      - "${NGINX_CONF}:/etc/nginx/templates/default.conf.template"
+      - "${PROJECT_DIR}:/var/www"
+  tool:
+    image: ${TOOL_IMAGE}
+    entrypoint:
+      - "/usr/local/bin/entrypoint"
+    networks:
+      - dev_network
+    working_dir: /var/www
+    volumes:
+      - "${TOOL_ENTRYPOINT}:/usr/local/bin/entrypoint"
+      - "${PROJECT_DIR}:/var/www"
+  proxy:
+    image: jwilder/nginx-proxy:latest
+    container_name: ${NETWORK}-proxy
+    networks:
+      - dev_network
+    volumes:
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+    ports:
+      - "${NETWORK_PROXY_PORT}:80"
+
+networks:
+  dev_network:
+    external:
+      name: "${NETWORK}"
